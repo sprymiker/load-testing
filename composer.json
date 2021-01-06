@@ -1,5 +1,5 @@
 {
-  "name": "spryker-sdk/load-testing",
+  "name": "sprymiker/load-testing",
   "type": "library",
   "description": "LoadTesting tool",
   "license": "proprietary",
