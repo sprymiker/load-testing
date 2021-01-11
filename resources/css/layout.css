@@ -29,12 +29,13 @@ a {
     color: #fff;
     background: #1b98f8;
     margin: 3px 0;
+    width: 100%;
 }
 .secondary-button {
     background: #fff;
     border: 1px solid #ddd;
     color: #666;
-    padding: 0.5em 2em;
+    width: 100%;
 }
 
 .pure-form-stacked {
@@ -133,7 +134,7 @@ a {
 
     /* Move the layout over so we can fit the nav + list in on the left */
     #layout {
-        padding-left:150px; /* "left col (nav + list)" width */
+        padding-left:200px; /* "left col (nav + list)" width */
         position: relative;
     }
 
@@ -145,8 +146,8 @@ a {
         overflow: auto;
     }
     #nav {
-        margin-left:-150px; /* "left col (nav + list)" width */
-        width:150px;
+        margin-left:-200px; /* "left col (nav + list)" width */
+        width:200px;
         height: 100%;
     }
 

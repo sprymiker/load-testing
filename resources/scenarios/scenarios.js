@@ -1,27 +1,28 @@
 const scenarios = [
-    {
-        title: 'Storefront',
-        tests: [
-            { id: 'Home', title: 'Home page'},
-            { id: 'Nope', title: 'Empty index'},
-            { id: 'CatalogSearch', title: 'Search page'},
-            { id: 'Pdp', title: 'PDP page'},
-            { id: 'AddToGuestCart', title: 'Add to guest cart request'},
-            { id: 'AddToCustomerCart', title: 'Add to customer cart request'},
-            { id: 'PlaceOrder', title: 'Place order request'},
-            { id: 'PlaceOrderCustomer', title: 'Place order customer request'},
-        ],
-    },
+    // {
+    //     title: 'Storefront',
+    //     tests: [
+    //         { id: 'Home', title: 'Home page'},
+    //         { id: 'Nope', title: 'Empty index'},
+    //         { id: 'CatalogSearch', title: 'Search page'},
+    //         { id: 'Pdp', title: 'PDP page'},
+    //         { id: 'AddToGuestCart', title: 'Add to guest cart'},
+    //         { id: 'AddToCustomerCart', title: 'Add to customer cart'},
+    //         { id: 'DirectPlaceOrder', title: 'Direct Place order'},
+    //         { id: 'PlaceOrderCustomer', title: 'Place order customer'},
+    //     ],
+    // },
     {
         title: 'API',
         tests: [
-            { id: 'CartApi', title: 'Add to cart request'},
-            { id: 'GuestCartApi', title: 'Add to guest cart request'},
-            { id: 'CatalogSearchApi', title: 'Search request'},
-            { id: 'PdpApi', title: 'PDP request'},
-            { id: 'GuestCheckoutApi', title: 'Guest checkout request'},
-            { id: 'CheckoutApi', title: 'Checkout request'},
-            { id: 'GuestCheckoutCustomerApi', title: 'Guest Checkout request with products'},
+            // { id: 'CartApi', title: 'API: Add to cart'},
+            { id: 'GuestCartApi', title: 'API: Add to guest cart'},
+            { id: 'CatalogSearchApi', title: 'API: Search'},
+            { id: 'PdpApi', title: 'API: PDP'},
+            // { id: 'GuestCheckoutApi', title: 'API: Guest checkout request'},
+            // { id: 'CheckoutApi', title: 'API: Checkout'},
+            { id: 'DirectPlaceOrderApi', title: 'API: Direct Place order'},
+            { id: 'GuestCartFlowApi', title: 'API: Guest Cart Flow'},
         ],
     },
 ];

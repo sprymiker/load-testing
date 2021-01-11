@@ -27,7 +27,7 @@ trait NopeBase {
   lazy val scenarioName = "Empty request"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = Iterator.continually(Map("rand" -> (Random.alphanumeric.take(20).mkString)))
+  val randomFeeder = Iterator.continually(Map("rand" -> (Random.alphanumeric.take(20).mkString)))
 
   val request = http(scenarioName)
     .get("/build.php")
@@ -35,7 +35,7 @@ trait NopeBase {
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
+    .feed(randomFeeder)
     .exec(request)
 }
 

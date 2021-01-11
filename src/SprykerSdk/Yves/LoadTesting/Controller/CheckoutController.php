@@ -7,13 +7,13 @@
 
 namespace SprykerSdk\Yves\LoadTesting\Controller;
 
-use Generated\Shared\Transfer\QuoteTransfer;
 use Spryker\Yves\Kernel\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @method \SprykerSdk\Yves\LoadTesting\LoadTestingFactory getFactory()
+ * @method \SprykerSdk\Client\LoadTesting\LoadTestingClientInterface getClient()
  */
 class CheckoutController extends AbstractController
 {
@@ -22,23 +22,14 @@ class CheckoutController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function placeOrderDebugAction(Request $request): JsonResponse
+    public function placeOrderTestAction(Request $request): JsonResponse
     {
-        $encodedQuote = $request->get('_payload');
-        if ($encodedQuote === null) {
+        $payload = $request->get('_payload');
+        if ($payload === null) {
             return $this->jsonResponse([], 400);
         }
 
-        $quoteArray = $this->getFactory()
-            ->getUtilEncodingService()
-            ->decodeJson($encodedQuote, true);
-        $quoteTransfer = (new QuoteTransfer())->fromArray($quoteArray, true);
-
-        if (!$this->getFactory()->getCheckoutClient()->isQuoteApplicableForCheckout($quoteTransfer)) {
-            return $this->jsonResponse([], 400);
-        }
-
-        $checkoutResponseTransfer = $this->getFactory()->getCheckoutClient()->placeOrder($quoteTransfer);
+        $checkoutResponseTransfer = $this->getClient()->placeOrderBasedOnPayloadForTestingPurposes($payload);
 
         if (!$checkoutResponseTransfer->getIsSuccess()) {
             return $this->jsonResponse([], 400);

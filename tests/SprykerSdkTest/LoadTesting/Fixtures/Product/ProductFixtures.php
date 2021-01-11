@@ -9,6 +9,8 @@ namespace SprykerSdkTest\LoadTesting\Fixtures\Product;
 
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
+use Spryker\Zed\Product\Business\Exception\MissingProductException;
+use Spryker\Zed\Product\Dependency\ProductEvents;
 use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductTester;
 use SprykerTest\Shared\Testify\Fixtures\FixturesBuilderInterface;
@@ -53,13 +55,39 @@ class ProductFixtures implements FixturesBuilderInterface, FixturesContainerInte
     {
         $demoData = $this->loadDemoData();
 
+        $eventFacade = $I->getEventFacade();
+        $productFacade = $I->getProductFacade();
+
         foreach ($demoData as $productConcreteData) {
+
+            try {
+                $productFacade->getProductConcrete($productConcreteData[static::KEY_SKU]);
+                continue;
+            } catch (MissingProductException $exception) {
+                //do nothing
+            }
+
             $productConcreteOverride = [
                 ProductConcreteTransfer::SKU => $productConcreteData[static::KEY_SKU],
                 ProductConcreteTransfer::IS_ACTIVE => 1,
             ];
 
-            $I->haveFullProductWithPrice($productConcreteOverride, [], $productConcreteData[static::KEY_PDP_URL]);
+            $productAbstractOverride = [
+                ProductAbstractTransfer::SKU => 'A' . $productConcreteData[static::KEY_SKU],
+            ];
+
+            $productConcreteTransfer = $I->haveFullProductWithPrice(
+                $productConcreteOverride,
+                $productAbstractOverride,
+                $productConcreteData[static::KEY_PDP_URL]
+            );
+
+            $eventFacade->trigger(
+                ProductEvents::PRODUCT_ABSTRACT_AFTER_CREATE,
+                (new ProductAbstractTransfer())
+                    ->setIdProductAbstract($productConcreteTransfer->getFkProductAbstract())
+            );
+            $eventFacade->trigger(ProductEvents::PRODUCT_CONCRETE_AFTER_CREATE, $productConcreteTransfer);
         }
     }
 

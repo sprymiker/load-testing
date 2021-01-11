@@ -12,7 +12,7 @@ use Spryker\Yves\Router\Route\RouteCollection;
 
 class LoadTestingRouterProviderPlugin extends AbstractRouteProviderPlugin
 {
-    public const ROUTE_NAME_PLACE_ORDER_DEBUG = 'place-order-debug';
+    public const ROUTE_NAME_PLACE_ORDER_DEBUG = 'place-order-test';
 
     /**
      * @param \Spryker\Yves\Router\Route\RouteCollection $routeCollection
@@ -21,7 +21,7 @@ class LoadTestingRouterProviderPlugin extends AbstractRouteProviderPlugin
      */
     public function addRoutes(RouteCollection $routeCollection): RouteCollection
     {
-        $routeCollection = $this->addPlaceOrderDebugRoute($routeCollection);
+        $routeCollection = $this->addPlaceOrderTestRoute($routeCollection);
 
         return $routeCollection;
     }
@@ -31,9 +31,9 @@ class LoadTestingRouterProviderPlugin extends AbstractRouteProviderPlugin
      *
      * @return \Spryker\Yves\Router\Route\RouteCollection
      */
-    protected function addPlaceOrderDebugRoute(RouteCollection $routeCollection): RouteCollection
+    protected function addPlaceOrderTestRoute(RouteCollection $routeCollection): RouteCollection
     {
-        $route = $this->buildRoute('/place-order-debug', 'LoadTesting', 'Checkout', 'placeOrderDebugAction');
+        $route = $this->buildRoute('/place-order-test', 'LoadTesting', 'Checkout', 'placeOrderTestAction');
         $route = $route->setMethods(['POST']);
         $routeCollection->add(static::ROUTE_NAME_PLACE_ORDER_DEBUG, $route);
 

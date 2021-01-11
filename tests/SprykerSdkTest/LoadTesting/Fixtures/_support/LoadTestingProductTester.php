@@ -11,8 +11,12 @@ use Codeception\Actor;
 use Generated\Shared\Transfer\MoneyValueTransfer;
 use Generated\Shared\Transfer\PriceProductTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
+use Generated\Shared\Transfer\ProductImageSetTransfer;
+use Generated\Shared\Transfer\ProductImageTransfer;
 use Generated\Shared\Transfer\StockProductTransfer;
 use Orm\Zed\Url\Persistence\SpyUrlQuery;
+use Spryker\Zed\Event\Business\EventFacadeInterface;
+use Spryker\Zed\Product\Business\ProductFacadeInterface;
 use Spryker\Zed\Store\Business\StoreFacadeInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesExporterInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesTrait;
@@ -45,8 +49,11 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
      *
      * @return \Generated\Shared\Transfer\ProductConcreteTransfer
      */
-    public function haveFullProductWithPrice(array $productConcreteOverride, array $productAbstractOverride, string $productUrl): ProductConcreteTransfer
-    {
+    public function haveFullProductWithPrice(
+        array $productConcreteOverride,
+        array $productAbstractOverride,
+        string $productUrl
+    ): ProductConcreteTransfer {
         $storeTransfer = $this->getStoreFacade()->getCurrentStore();
 
         $productConcreteTransfer = $this->haveFullProduct(
@@ -58,6 +65,18 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             StockProductTransfer::SKU => $productConcreteTransfer->getSku(),
             StockProductTransfer::IS_NEVER_OUT_OF_STOCK => 1,
         ]);
+
+        $priceAbstractProductOverride = [
+            PriceProductTransfer::SKU_PRODUCT_ABSTRACT => $productConcreteTransfer->getAbstractSku(),
+            PriceProductTransfer::ID_PRODUCT_ABSTRACT => $productConcreteTransfer->getFkProductAbstract(),
+            PriceProductTransfer::PRICE_TYPE_NAME => 'DEFAULT',
+            PriceProductTransfer::MONEY_VALUE => [
+                MoneyValueTransfer::NET_AMOUNT => 770,
+                MoneyValueTransfer::GROSS_AMOUNT => 880,
+            ],
+        ];
+
+        $this->havePriceProduct($priceAbstractProductOverride);
 
         $priceProductOverride = [
             PriceProductTransfer::SKU_PRODUCT_ABSTRACT => $productConcreteTransfer->getAbstractSku(),
@@ -71,8 +90,21 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
         ];
 
         $this->havePriceProduct($priceProductOverride);
+
         $this->replaceProductUrl($productConcreteTransfer->getFkProductAbstract(), $productUrl);
         $this->haveAvailabilityAbstract($productConcreteTransfer);
+
+        $this->haveProductImageSet([
+            ProductImageSetTransfer::NAME => 'default',
+            ProductImageSetTransfer::ID_PRODUCT_ABSTRACT => $productConcreteTransfer->getFkProductAbstract(),
+            ProductImageSetTransfer::PRODUCT_IMAGES => [
+                (new ProductImageTransfer())->fromArray([
+                    ProductImageTransfer::EXTERNAL_URL_SMALL => 'https://via.placeholder.com/320x240.png',
+                    ProductImageTransfer::EXTERNAL_URL_LARGE => 'https://via.placeholder.com/640x480.png',
+                    ProductImageTransfer::SORT_ORDER => 1,
+                ])
+            ]
+        ]);
 
         return $productConcreteTransfer;
     }
@@ -87,8 +119,7 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
     {
         $urlEntity = SpyUrlQuery::create()
             ->filterByFkResourceProductAbstract($idProductAbstract)
-            ->useSpyLocaleQuery()
-                ->filterByLocaleName('en_US')
+            ->useSpyLocaleQuery()->filterByLocaleName('en_US')
             ->endUse()
             ->findOne();
 
@@ -99,8 +130,24 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
     /**
      * @return \Spryker\Zed\Store\Business\StoreFacadeInterface
      */
-    protected function getStoreFacade(): StoreFacadeInterface
+    public function getStoreFacade(): StoreFacadeInterface
     {
         return $this->getLocator()->store()->facade();
+    }
+
+    /**
+     * @return \Spryker\Zed\Event\Business\EventFacadeInterface
+     */
+    public function getEventFacade(): EventFacadeInterface
+    {
+        return $this->getLocator()->event()->facade();
+    }
+
+    /**
+     * @return \Spryker\Zed\Product\Business\ProductFacadeInterface
+     */
+    public function getProductFacade(): ProductFacadeInterface
+    {
+        return $this->getLocator()->product()->facade();
     }
 }

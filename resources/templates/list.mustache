@@ -21,6 +21,7 @@
             {title: "Status", field: "success", align: "center", formatter: "tickCross"},
             {title: "Type", field: "testType", headerFilter: "input"},
             {title: "RPS", field: "targetRps", sorter: "number"},
+            {title: "<small>Iterations</small>", field: "iterations", sorter: "number"},
             {title: "<small>Duration, <br>minutes</small>", field: "duration", sorter: "number"},
             {
                 title: "Valid",
@@ -96,6 +97,10 @@
 
                     fetch(deleteUri, {method: 'delete'})
                             .then(res => {
+                                if (res.status === 400) {
+                                    window.location.href = '/terminate/' + data.id;
+                                    return;
+                                }
                                 if (res.ok) {
                                     //todo: for reset navbar
                                     location.reload();

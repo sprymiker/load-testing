@@ -28,15 +28,12 @@ trait HomeBase {
   lazy val scenarioName = "Home page"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = Iterator.continually(Map("rand" -> (Random.alphanumeric.take(20).mkString)))
 
   val request = http(scenarioName)
     .get("/")
-    .queryParam("rand", "${rand}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
     .exec(request)
 }
 

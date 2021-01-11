@@ -28,11 +28,12 @@ trait CatalogSearchApiBase {
   lazy val scenarioName = "Catalog Search Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
-  val feeder = csv("tests/_data/product_concrete.csv").random
+  val feeder = csv("tests/_data/product_groups.csv").random
 
   val request = http(scenarioName)
     .get("/catalog-search")
-    .queryParam("q", "${sku}")
+    .queryParam("q", "${group}")
+    .queryParam("include", "abstract-products,concrete-products")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

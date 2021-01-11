@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require("glob");
 const {spawn} = require('child_process');
+const psTree = require('ps-tree');
 const dateFormat = require('date-format');
 const rimraf = require("rimraf");
 const fastify = require('fastify')({logger: true});
@@ -85,6 +86,13 @@ fastify.post('/reports', async(req, reply) => {
 fastify.delete('/reports/*', (req, reply) => {
     let reportId = String(req.params['*']);
 
+    if (jobs.has(reportId)) {
+        reply.code(400);
+        reply.send('');
+
+        return;
+    }
+
     let archivePath = destinationFolder + '/archive/' + reportId;
     let reportPath = destinationFolder + '/' + reportId;
 
@@ -130,6 +138,7 @@ fastify.post('/run', async (req, reply) => {
     let testName = req.body.testName;
     let testType = req.body.testType;
     let targetRps = req.body.targetRps;
+    let iterations = req.body.iterations || 1;
     let duration = req.body.duration;
     let description = req.body.description;
     let title = `${testName}${testType}`;
@@ -141,13 +150,14 @@ fastify.post('/run', async (req, reply) => {
     }
 
     let project = instanceList.get(instance);
-    let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
+    let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/x-${iterations}/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
     let reportPath = `/report/${key}/report/index.html`;
     let reportFolder = `./${destinationFolder}/${key}`;
     await fs.mkdirs(reportFolder);
 
     let runObject = {
         id: key,
+        process: null,
         done: false,
         exitCode: -1,
         when: new Date().getTime(),
@@ -156,11 +166,13 @@ fastify.post('/run', async (req, reply) => {
         testName,
         testType,
         targetRps,
+        iterations,
         duration,
         description,
         title,
         reportPath,
         logPath: `/log/${key}`,
+        terminatePath: `/terminate/${key}`,
         valid: null,
     };
 
@@ -172,26 +184,35 @@ fastify.post('/run', async (req, reply) => {
         + ` -DYVES_URL=${project.yves}`
         + ` -DGLUE_URL=${project.glue}`
         + ` -DDURATION=${duration}`
+        + ` -DITERATIONS=${iterations}`
         + ` -DTARGET_RPS=${targetRps}`;
 
     description = description || '-';
-    const run = spawn('./gatling/bin/gatling.sh', ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
+    const gatlingEnv = `JAVA_OPTS='${env.JAVA_OPTS}'`;
+    const gatlingCommand = './gatling/bin/gatling.sh';
+    const gatlingArguments = ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`];
+    runObject.process = spawn(gatlingCommand, gatlingArguments, {env: env});
 
-    run.stdout.on('data', data => {
+    runObject.log.push({
+        entry: gatlingEnv + ' ' + gatlingCommand + ' ' + gatlingArguments.join(' ') + "\n" + "\n",
+        error: false
+    });
+
+    runObject.process.stdout.on('data', data => {
         runObject.log.push({
             entry: data.toString(),
             error: false
         });
     });
 
-    run.stderr.on('data', data => {
+    runObject.process.stderr.on('data', data => {
         runObject.log.push({
             entry: data.toString(),
             error: true
         });
     });
 
-    run.on('close', async code => {
+    runObject.process.on('close', async code => {
         runObject.done = true;
         runObject.exitCode = code;
         runObject.success = code === 0;
@@ -202,6 +223,8 @@ fastify.post('/run', async (req, reply) => {
             await fs.remove(reportFolder);
             return;
         }
+
+        runObject.process = null;
 
         await glob(`${reportFolder}/*/`, (er, directories) => {
             directories.map(async directory => fs.rename(directory, `${reportFolder}${reportSuffix}`));
@@ -271,10 +294,8 @@ fastify.delete('/instances/:instanceKey', (req, reply) => {
 
 fastify.get('/log/*', async (req, reply) => {
     let runId = String(req.params['*']);
-    console.log(runId);
     if (!reports.has(runId)) {
-        reply.code(404);
-        reply.send('');
+        reply.redirect(302, '/');
         return;
     }
     let runObject = reports.get(runId);
@@ -285,6 +306,31 @@ fastify.get('/log/*', async (req, reply) => {
         log,
         title: 'Console log',
         errorMessage: 'Some tests are already running.',
+        scenarios: scenarios,
+        projects: Array.from(instanceList.values()),
+        jobs: Array.from(jobs.values()),
+        reports: Array.from(reports.values()),
+    }, {...partials});
+});
+
+fastify.get('/terminate/*', async (req, reply) => {
+    let runId = String(req.params['*']);
+    if (!jobs.has(runId)) {
+        reply.redirect(302, '/');
+        return;
+    }
+    let runObject = jobs.get(runId);
+
+    if (runObject.process) {
+        psTree(runObject.process.pid, function (err, children) {
+            spawn('kill', ['-9'].concat(children.map(function (p) { return p.PID })));
+        });
+    }
+
+    let template = runObject.done ? 'history-log.mustache' : 'log.mustache';
+    reply.view('terminate.mustache', {
+        runObject,
+        title: 'Terminating...',
         scenarios: scenarios,
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),

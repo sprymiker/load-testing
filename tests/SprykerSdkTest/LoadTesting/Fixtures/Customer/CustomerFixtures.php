@@ -13,6 +13,7 @@ use Generated\Shared\Transfer\CompanyRoleTransfer;
 use Generated\Shared\Transfer\CompanyUserTransfer;
 use Generated\Shared\Transfer\CustomerTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
+use Spryker\Zed\Customer\Business\Exception\CustomerNotFoundException;
 use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingCustomerTester;
 use SprykerTest\Shared\Testify\Fixtures\FixturesBuilderInterface;
@@ -63,8 +64,20 @@ class CustomerFixtures implements FixturesBuilderInterface, FixturesContainerInt
         $demoData = $this->loadDemoData();
         $quoteOverride = $this->buildQuoteOverrideData($I);
         $companyOverride = $this->buildCompanyUserOverride($I);
+        $customerFacade = $I->getCustomerFacade();
 
         foreach ($demoData as $customerData) {
+
+            try {
+                $customerFacade->getCustomer(
+                    (new CustomerTransfer())
+                        ->setEmail($customerData[static::KEY_EMAIL])
+                );
+                continue;
+            } catch (CustomerNotFoundException $exception) {
+                //do nothing
+            }
+
             $customerOverride = $this->buildCustomerOverrideData($customerData);
 
             $customerTransfer = $I->haveCustomerWithPersistentQuote(

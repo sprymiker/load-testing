@@ -18,11 +18,12 @@ suites:
         modules:
             enabled:
                 - \SprykerTest\Shared\Testify\Helper\Environment
-                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerSdkTest\LoadTesting\Fixtures\Helper\NamespaceIndependentLocatorHelper
                 - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
                 - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
                 - \SprykerTest\Shared\Product\Helper\ProductDataHelper
                 - \SprykerTest\Zed\ProductAttribute\Helper\ProductAttributeDataHelper
+                - \SprykerTest\Shared\ProductImage\Helper\ProductImageDataHelper
                 - \SprykerTest\Shared\Stock\Helper\StockDataHelper
                 - \SprykerTest\Shared\Tax\Helper\TaxSetDataHelper
                 - \SprykerTest\Shared\PriceProduct\Helper\PriceProductDataHelper
@@ -37,7 +38,7 @@ suites:
         modules:
             enabled:
                 - \SprykerTest\Shared\Testify\Helper\Environment
-                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerSdkTest\LoadTesting\Fixtures\Helper\NamespaceIndependentLocatorHelper
                 - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
                 - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
                 - \SprykerTest\Shared\Testify\Helper\DependencyHelper

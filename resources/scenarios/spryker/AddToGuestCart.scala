@@ -38,7 +38,6 @@ trait AddToGuestCartBase {
   val addToCartRequest = http(scenarioName)
     .post("/en/cart/add/${sku}")
     .formParam("quantity", "1")
-    .header("Cookie", "XDEBUG_SESSION=XDEBUG_ECLIPSE")
     .formParam("add_to_cart_form[_token]", "${csrfToken}")
 
   val scn = scenario(scenarioName)

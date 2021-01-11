@@ -1,0 +1,19 @@
+{{> header}}
+
+{{#runObject}}
+
+<h2>{{ id }}</h2>
+
+{{/runObject}}
+
+<h3>Terminating...</h3>
+
+<script>
+
+    setTimeout(function () {
+        window.location.reload();
+    }, 1000);
+
+</script>
+
+{{> footer}}

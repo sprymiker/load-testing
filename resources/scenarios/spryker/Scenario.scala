@@ -21,13 +21,17 @@ import scala.concurrent.duration._
 object Scenario {
 
   val targetRps = Integer.getInteger("TARGET_RPS", 0)
+  val iterations = Integer.getInteger("ITERATIONS", 0)
   val duration = FiniteDuration(Integer.getInteger("DURATION", 0).toLong, MINUTES)
 
   require(targetRps > 0, s"TARGET_RPS ($targetRps) must be >= 0")
+  require(iterations > 0, s"ITERATIONS ($iterations) must be >= 0")
   require(duration > Duration.Zero, s"DURATION ($duration) must be >= 0")
 
   println()
   printf("Target RPS: %d", targetRps)
+  println()
+  printf("Iterations: %d", iterations)
   println()
   printf("Duration: %s", duration)
   println()

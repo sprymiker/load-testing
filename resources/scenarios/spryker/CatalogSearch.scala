@@ -28,11 +28,11 @@ trait CatalogSearchBase {
   lazy val scenarioName = "Catalog Search page"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = csv("tests/_data/product_concrete.csv").random
+  val feeder = csv("tests/_data/product_groups.csv").random
 
   val request = http(scenarioName)
     .get("/search")
-    .queryParam("q", "${sku}")
+    .queryParam("q", "${group}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

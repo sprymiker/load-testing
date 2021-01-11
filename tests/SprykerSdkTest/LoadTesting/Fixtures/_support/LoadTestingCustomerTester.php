@@ -10,6 +10,7 @@ namespace SprykerSdkTest\LoadTesting\Fixtures;
 use Codeception\Actor;
 use Generated\Shared\Transfer\CustomerTransfer;
 use Generated\Shared\Transfer\QuoteTransfer;
+use Spryker\Zed\Customer\Business\CustomerFacadeInterface;
 use Spryker\Zed\Store\Business\StoreFacadeInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesExporterInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesTrait;
@@ -58,5 +59,13 @@ class LoadTestingCustomerTester extends Actor implements FixturesExporterInterfa
     public function getStoreFacade(): StoreFacadeInterface
     {
         return $this->getLocator()->store()->facade();
+    }
+
+    /**
+     * @return \Spryker\Zed\Customer\Business\CustomerFacadeInterface
+     */
+    public function getCustomerFacade(): CustomerFacadeInterface
+    {
+        return $this->getLocator()->customer()->facade();
     }
 }
