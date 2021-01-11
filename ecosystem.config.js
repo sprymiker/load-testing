@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "gatling",
             script: "./public/index.js",
-            watch: true,
+            autorestart: true,
             env: {
                 "PORT": "80",
             }
