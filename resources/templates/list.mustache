@@ -12,8 +12,8 @@
         groupHeader: function (value, count, data, group) {
             return value ? 'Done' : ('Running (' + count + ')');
         },
-        initialSort:[
-            {column:"when", dir:"desc"},
+        initialSort: [
+            {column: "when", dir: "desc"},
         ],
         columns: [
             {title: "Test", field: "testName", widthGrow: 2, headerFilter: "input"},
@@ -28,11 +28,11 @@
                 field: "valid",
                 align: "center",
                 formatter: "tickCross",
-                formatterParams:{
-                    allowEmpty:true,
-                    allowTruthy:true,
+                formatterParams: {
+                    allowEmpty: true,
+                    allowTruthy: true,
                 },
-                cellClick: function(e, cell){
+                cellClick: function (e, cell) {
                     let valid = cell.getValue();
                     let data = cell.getData();
                     let row = cell.getRow();
@@ -46,7 +46,6 @@
                     }).then(res => {
                         if (res.ok) {
                             row.getData();
-                            // location.reload();
 
                             return;
                         }
@@ -67,7 +66,69 @@
                 sorter: "number",
                 headerFilter: "input"
             },
-            {title: "Description", field: "description", headerFilter: "input", widthGrow: 4, headerFilter: "input"},
+            {
+                title: "Description",
+                field: "description",
+                headerFilter: "input",
+                widthGrow: 4,
+                headerFilter: "input",
+                editor: function (cell, onRendered, success, cancel) {
+                    let data = cell.getData();
+
+                    var input = document.createElement("input");
+
+                    input.style.padding = "4px";
+                    input.style.width = "100%";
+                    input.style.boxSizing = "border-box";
+
+                    input.value = cell.getValue();
+
+                    let descriptionUri = '/description/' + data.id;
+                    var submitDesciption = function (value) {
+
+                        let data = cell.getData();
+                        data.description = value;
+
+                        fetch('/reports', {
+                            method: 'post',
+                            body: JSON.stringify(data),
+                        }).then(res => {
+                            if (res.ok) {
+                                success(value);
+
+                                return;
+                            }
+                            cancel();
+                        });
+                    }
+
+                    onRendered(function(){
+                        input.focus();
+                        input.style.height = "100%";
+                    });
+
+                    //submit new value on blur
+                    input.addEventListener("blur", function (e) {
+                        if (input.value != cell.getValue()) {
+                            submitDesciption(input.value)
+                        } else {
+                            cancel();
+                        }
+                    });
+
+                    //submit new value on enter
+                    input.addEventListener("keydown", function (e) {
+                        if (e.keyCode == 13) {
+                            submitDesciption(input.value)
+                        }
+                        if (e.keyCode == 27) {
+                            cancel();
+                        }
+                    });
+
+                    return input;
+                },
+            },
             {
                 title: "",
                 field: "",
@@ -86,8 +147,8 @@
                 }
             },
             {
-                formatter:"buttonCross",
-                cellClick: function(e, cell){
+                formatter: "buttonCross",
+                cellClick: function (e, cell) {
                     if (!confirm('Are you sure to delete?')) {
                         return;
                     }
@@ -111,8 +172,8 @@
                                 console.log(res.status);
                             });
                 },
-                width:30,
-                hozAlign:"center"
+                width: 30,
+                hozAlign: "center"
             },
         ],
     });
@@ -123,9 +184,10 @@
         table.setHeaderFilterValue(filter, filters[filter]);
     });
 
-    setInterval(function () {
-        table.replaceData();
-    }, 5000);
+    // TODO if data changed - show button with reload.
+    // setInterval(function () {
+    //     table.replaceData();
+    // }, 5000);
 
 </script>
 
