@@ -183,6 +183,7 @@ fastify.post('/run', async (req, reply) => {
     env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
         + ` -DYVES_URL=${project.yves}`
         + ` -DGLUE_URL=${project.glue}`
+        + ` -DGLUE_FRONT_URL=${project.glueFront}`
         + ` -DDURATION=${duration}`
         + ` -DITERATIONS=${iterations}`
         + ` -DTARGET_RPS=${targetRps}`;
@@ -262,11 +263,13 @@ fastify.post('/instances', (req, reply) => {
     let key = req.body.key;
     let yves = req.body.yves;
     let glue = req.body.glue;
+    let glueFront = req.body.glueFront;
 
     if (key !== "") {
         let project = Object.assign({},
             yves && {"yves": yves},
             glue && {"glue": glue},
+            glueFront && {"glueFront": glueFront},
             key && {"key": key},
         );
 

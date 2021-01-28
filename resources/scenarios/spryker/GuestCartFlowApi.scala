@@ -29,13 +29,14 @@ trait GuestCartFlowApiBase {
   lazy val scenarioName = "API: Guest Cart Flow"
 
   val httpProtocol: HttpProtocolBuilder = GlueProtocol.httpProtocol
+  val glueFrontBaseUrl = GlueFrontProtocol.baseUrl.stripSuffix("/")
 
   val customerUniqueIdFeeder: Iterator[Map[String, String]] = Iterator.continually(Map("customerUniqueId" -> (Random.alphanumeric.take(25).mkString)))
-  val quantityFeeder = Iterator.continually(Map("quantity" -> (Random.nextInt(9) + 1)))
+  val quantityFeeder = Iterator.continually(Map("quantity" -> 1))
   val productGroups = csv("tests/_data/product_groups.csv").readRecords
 
   val searchRequest: HttpRequestBuilder = http("Catalog Search for a random product")
-    .get("/catalog-search")
+    .get(glueFrontBaseUrl + "/catalog-search")
     .queryParam("q", "${group}")
     .queryParam("include", "abstract-products")
     .check(status.is(200))

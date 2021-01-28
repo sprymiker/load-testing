@@ -20,14 +20,14 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import scala.util.Random
-import spryker.GlueProtocol._
+import spryker.GlueFrontProtocol._
 import spryker.Scenario._
 
 trait CatalogSearchApiBase {
 
   lazy val scenarioName = "Catalog Search Api"
 
-  val httpProtocol = GlueProtocol.httpProtocol
+  val httpProtocol = GlueFrontProtocol.httpProtocol
   val feeder = csv("tests/_data/product_groups.csv").random
 
   val request = http(scenarioName)
