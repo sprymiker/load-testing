@@ -22,6 +22,7 @@ const scenarios = [
             // { id: 'GuestCheckoutApi', title: 'API: Guest checkout request'},
             // { id: 'CheckoutApi', title: 'API: Checkout'},
             { id: 'DirectPlaceOrderApi', title: 'API: Direct Place order'},
+            { id: 'DirectPlaceOrderBaseApiWithSoiGrouping', title: 'API: Direct Place order with SOI grouping'},
             { id: 'GuestCartFlowApi', title: 'API: Guest Cart Flow'},
         ],
     },
