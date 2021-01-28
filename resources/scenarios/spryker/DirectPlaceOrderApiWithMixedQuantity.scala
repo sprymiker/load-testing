@@ -23,12 +23,12 @@ import scala.util.Random
 import spryker.GlueProtocol._
 import spryker.Scenario._
 
-trait DirectPlaceOrderBaseApiWithSoiGrouping {
+trait DirectPlaceOrderBaseApiWithMixedQuantity {
 
-  lazy val scenarioName = "API: Direct PlaceOrder with SOI grouping"
+  lazy val scenarioName = "API: Direct PlaceOrder with mixed quantity (x70)"
 
   val httpProtocol = GlueProtocol.httpProtocol
-  val feeder = tsv(s"resources/scenarios/payload/place_order_payload_x70_with_soi_grouping.csv").circular;
+  val feeder = tsv(s"resources/scenarios/payload/place_order_payload_x70_with_mixed_quantity.csv").circular;
 
   val request = http(scenarioName)
     .post("/place-order-test")
@@ -41,9 +41,9 @@ trait DirectPlaceOrderBaseApiWithSoiGrouping {
     .exec(request)
 }
 
-class DirectPlaceOrderBaseApiWithSoiGroupingRamp extends Simulation with DirectPlaceOrderBaseApiWithSoiGrouping {
+class DirectPlaceOrderBaseApiWithMixedQuantityRamp extends Simulation with DirectPlaceOrderBaseApiWithMixedQuantity {
 
-  override lazy val scenarioName = "API: Direct PlaceOrder with SOI grouping [Incremental]"
+  override lazy val scenarioName = "API: Direct PlaceOrder with mixed quantity (x70) [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -52,9 +52,9 @@ class DirectPlaceOrderBaseApiWithSoiGroupingRamp extends Simulation with DirectP
     .protocols(httpProtocol)
 }
 
-class DirectPlaceOrderBaseApiWithSoiGroupingSteady extends Simulation with DirectPlaceOrderBaseApiWithSoiGrouping {
+class DirectPlaceOrderBaseApiWithMixedQuantitySteady extends Simulation with DirectPlaceOrderBaseApiWithMixedQuantity {
 
-  override lazy val scenarioName = "API: Direct PlaceOrder with SOI grouping [Steady RPS]"
+  override lazy val scenarioName = "API: Direct PlaceOrder with mixed quantity (x70) [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),
