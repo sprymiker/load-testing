@@ -26,6 +26,14 @@ const scenarios = [
             { id: 'GuestCartFlowApi', title: 'API: Guest Cart Flow'},
         ],
     },
+    {
+        title: 'API: Non-persistent Cart',
+        tests: [
+            { id: 'GuestNonPersistentCartFlowApi', title: 'API: Guest Non-persistent Cart Flow'},
+            { id: 'GuestNonPersistentCartCalculateApi', title: 'API: Calculate Non-persistent Cart'},
+            { id: 'GuestNonPersistentCartCheckoutApi', title: 'API: Checkout Non-persistent Cart'},
+        ],
+    },
 ];
 
 module.exports = scenarios;
